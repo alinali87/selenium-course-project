@@ -46,6 +46,9 @@ class BasePage:
     def open(self):
         self.browser.get(self.url)
 
+    def should_be_authorized(self):
+        assert self.is_element_present(*Locators.USER_ICON), 'User icon is not presented, probably unauthorised user'
+
     def should_be_login_link(self):
         assert self.is_element_present(*Locators.LOGIN_LINK), 'Login link is not presented'
 
