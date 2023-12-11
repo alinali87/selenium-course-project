@@ -1,4 +1,3 @@
-import os
 import time
 import pytest
 from random import choice
@@ -30,6 +29,7 @@ class TestUserAddToBasketFromProductPage:
         page.open()
         page.should_not_be_success_message()
 
+    @pytest.mark.need_review
     def test_user_can_add_product_to_basket(self, browser):
         url = f'http://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/?promo=offer1'
         page = ProductPage(browser=browser, url=url)
@@ -39,6 +39,22 @@ class TestUserAddToBasketFromProductPage:
         page.add_to_basket()
         page.should_be_item_added_message(title)
         page.should_be_cost_message(price)
+
+
+@pytest.mark.need_review
+@pytest.mark.parametrize('tag',
+                         [f'offer{n}' for n in range(7)] +
+                         [pytest.param('offer7', marks=pytest.mark.xfail)] +
+                         [f'offer{n}' for n in range(8, 10)])
+def test_guest_can_add_product_to_basket(browser, tag):
+    url = f'http://selenium1py.pythonanywhere.com/en-gb/catalogue/coders-at-work_207/?promo={tag}'
+    page = ProductPage(browser=browser, url=url)
+    page.open()
+    title = page.read_title()
+    price = page.read_price()
+    page.add_to_basket()
+    page.should_be_item_added_message(title)
+    page.should_be_cost_message(price)
 
 
 @pytest.mark.skip
@@ -64,7 +80,8 @@ def test_guest_should_see_login_link_on_product_page(browser):
     page.should_be_login_link()
 
 
-def test_guest_should_go_to_login_page_from_product_page(browser):
+@pytest.mark.need_review
+def test_guest_can_go_to_login_page_from_product_page(browser):
     page = ProductPage(browser=browser, url=url)
     page.open()
     page.go_to_login_page()
@@ -72,6 +89,7 @@ def test_guest_should_go_to_login_page_from_product_page(browser):
     login_page.should_be_login_page()
 
 
+@pytest.mark.need_review
 def test_guest_cant_see_product_in_basket_opened_from_product_page(browser):
     page = ProductPage(browser=browser, url=url)
     page.open()
